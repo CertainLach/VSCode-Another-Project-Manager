@@ -2,9 +2,10 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import { Project } from "./project";
 
 const homeDir = os.homedir();
-const projectsFile = 'projects.json';
+const projectsFile = 'another-project-manager.json';
 export function getProjectFilePath() {
 	const configuration = vscode.workspace.getConfiguration('anotherProjectManager');
 	const projectsLocation: string | undefined = configuration.get('projectsLocation');
@@ -38,22 +39,29 @@ export function getChannelPath() {
 		? 'user-data'
 		: vscode.env.appName.replace('Visual Studio ', '');
 }
-export function loadProjects(filename: string) {
+export async function loadProjects(): Promise<Project[]> {
+	const filename = getProjectFilePath();
 	if (!fs.existsSync(filename))
 		return [];
 	try {
-		const items = JSON.parse(fs.readFileSync(filename).toString());
+		const items = JSON.parse((await fs.promises.readFile(filename)).toString());
 		return items;
-	}
-	catch (error) {
+	} catch (error) {
 		const optionOpenFile = { title: 'Open File' };
 		vscode.window
 			.showErrorMessage("Error loading projects.json file.", optionOpenFile)
 			.then(option => {
 				if (option?.title === 'Open File')
-					vscode.commands.executeCommand('anotherProjectManager.exitProjects');
+					vscode.commands.executeCommand('anotherProjectManager.editProjects');
 			});
 		return [];
 	}
 }
-//# sourceMappingURL=pathUtil.js.map
+export async function saveProjects(projects: Project[]) {
+	await fs.promises.writeFile(getProjectFilePath(), JSON.stringify(projects, null, 2));
+}
+export async function modifyProjects(modifier: (p: Project[]) => void) {
+	const loaded = await loadProjects();
+	modifier(loaded);
+	return await saveProjects(loaded);
+}

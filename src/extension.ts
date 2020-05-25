@@ -3,17 +3,17 @@ import * as vscode from 'vscode';
 import * as anotherProjectManager from './anotherProjectManager';
 import * as pathUtil from './pathUtil';
 
-export function activate(_ctx: vscode.ExtensionContext) {
+export async function activate(_ctx: vscode.ExtensionContext) {
 	const anotherProjectManagerProvider = new anotherProjectManager.ProjectsNodeProvider(vscode.workspace.rootPath);
 	vscode.window.registerTreeDataProvider('anotherProjectManager', anotherProjectManagerProvider);
-	vscode.commands.registerCommand('anotherProjectManager.refreshEntry', () => anotherProjectManagerProvider.refresh());
+	vscode.commands.registerCommand('anotherProjectManager.refreshEntry', async () => {
+		await anotherProjectManagerProvider.refresh();
+	});
 	vscode.commands.registerCommand('extension.open', async (path) => {
 		const uri = vscode.Uri.parse(path);
 		try {
-			const value = await vscode.commands.executeCommand('vscode.openFolder', uri, false);
-			return ({});
-		}
-		catch (value_1) {
+			return await vscode.commands.executeCommand('vscode.openFolder', uri, false);
+		} catch {
 			return await vscode.window.showInformationMessage("Could not open the project!");
 		}
 	});
@@ -21,24 +21,39 @@ export function activate(_ctx: vscode.ExtensionContext) {
 		const node = v.node;
 		const uri = vscode.Uri.parse(node.path);
 		try {
-			const value = await vscode.commands.executeCommand('vscode.openFolder', uri, true);
-			return ({});
-		}
-		catch (value_1) {
+			return await vscode.commands.executeCommand('vscode.openFolder', uri, true);
+		} catch {
 			return await vscode.window.showInformationMessage("Could not open the project!");
 		}
 	});
-	vscode.commands.registerCommand('anotherProjectManager.exitProjects', async () => {
+	vscode.commands.registerCommand('anotherProjectManager.editProjects', async () => {
 		const uri = vscode.Uri.parse(pathUtil.getProjectFilePath());
 		try {
-			const value = await vscode.commands.executeCommand('vscode.open', uri);
-			return ({});
-		}
-		catch (value_1) {
+			return await vscode.commands.executeCommand('vscode.open', uri);
+		} catch {
 			return await vscode.window.showInformationMessage("Could not open the projects file!");
 		}
 	});
-	fs.watchFile(pathUtil.getProjectFilePath(), { interval: 100 }, () => {
-		anotherProjectManagerProvider.refresh();
+	vscode.commands.registerCommand('anotherProjectManager.addCurrentWorkspace', async () => {
+		if (!vscode.workspace.name)
+			return await vscode.window.showErrorMessage('No workspace opened!');
+		await pathUtil.modifyProjects(p => {
+			p.push({
+				"title": vscode.workspace.name,
+				"path": vscode.workspace.workspaceFile?.toString() ?? vscode.workspace.workspaceFolders?.[0].uri.toString(),
+			});
+		});
 	});
+	vscode.commands.registerCommand('anotherProjectManager.createDirectory', async () => {
+		await pathUtil.modifyProjects(p => {
+			p.push({
+				"title": "New directory",
+				"nodes": [],
+			});
+		});
+	});
+	fs.watchFile(pathUtil.getProjectFilePath(), { interval: 100 }, async () => {
+		await anotherProjectManagerProvider.refresh();
+	});
+	await anotherProjectManagerProvider.refresh();
 }
