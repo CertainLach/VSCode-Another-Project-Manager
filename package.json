@@ -1,126 +1,130 @@
 {
-	"name": "another-project-manager",
-	"displayName": "another-project-manager",
-	"description": "",
-	"version": "0.0.1",
-	"publisher": "lach",
-	"author": "CertainLach",
-	"engines": {
-		"vscode": "^1.42.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"extensionKind": [
-		"ui",
-		"workspace"
-	],
-	"activationEvents": [
-		"onView:anotherProjectManager"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "projects-explorer",
-					"title": "Project Explorer",
-					"icon": "media/boxes-solid.svg"
-				}
-			]
-		},
-		"views": {
-			"projects-explorer": [
-				{
-					"id": "anotherProjectManager",
-					"name": ""
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "anotherProjectManager.exitProjects",
-				"title": "Configure",
-				"icon": {
-					"light": "resources/light/configure.svg",
-					"dark": "resources/dark/configure.svg"
-				}
-			},
-			{
-				"command": "anotherProjectManager.refreshEntry",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "anotherProjectManager.openNewWindow",
-				"title": "Open in new window",
-				"icon": {
-					"light": "resources/light/empty-window.svg",
-					"dark": "resources/dark/empty-window.svg"
-				}
-			},
-			{
-				"command": "anotherProjectManager.deleteEntry",
-				"title": "Delete"
-			}
-		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "anotherProjectManager.exitProjects",
-					"when": "view == anotherProjectManager",
-					"group": "navigation"
-				},
-				{
-					"command": "anotherProjectManager.refreshEntry",
-					"when": "view == anotherProjectManager",
-					"group": "navigation"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "anotherProjectManager.openNewWindow",
-					"when": "view == anotherProjectManager && viewItem == project",
-					"group": "inline"
-				},
-				{
-					"command": "anotherProjectManager.deleteEntry",
-					"when": "view == anotherProjectManager && viewItem == dependency"
-				}
-			]
-		},
-		"configuration": [
-			{
-				"title": "Another Project Manager",
-				"properties": {
-					"anotherProjectManager.projectsLocation": {
-						"type": "string",
-						"default": "",
-						"description": "Indicates an alternative location where the `projects.json` file is stored"
-					}
-				}
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.2",
-		"@types/node": "^13.9.3",
-		"@types/vscode": "^1.42.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.1.1",
-		"typescript": "^3.9.0-dev.20200323",
-		"tslint": "^6.1.0",
-		"vscode-test": "^1.3.0"
-	}
+  "name": "another-project-manager",
+  "displayName": "another-project-manager",
+  "description": "",
+  "version": "2.0.0",
+  "publisher": "lach",
+  "author": "CertainLach",
+  "repository": "git@github.com:CertainLach/VSCode-Another-Project-Manager.git",
+  "engines": {
+    "vscode": "^1.42.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onView:anotherProjectManager"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": "another-project-manager.json",
+        "url": "./another-project-manager.schema.json"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "projects-explorer",
+          "title": "Project Explorer",
+          "icon": "media/boxes-solid.svg"
+        }
+      ]
+    },
+    "views": {
+      "projects-explorer": [
+        {
+          "id": "anotherProjectManager",
+          "name": ""
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "anotherProjectManager.addCurrentWorkspace",
+        "title": "Add current workspace",
+        "icon": "$(file-symlink-file)"
+      },
+      {
+        "command": "anotherProjectManager.createDirectory",
+        "title": "Create directory",
+        "icon": "$(file-directory-create)"
+      },
+      {
+        "command": "anotherProjectManager.editProjects",
+        "title": "Edit projects list",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "anotherProjectManager.refreshEntry",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "anotherProjectManager.openNewWindow",
+        "title": "Open in new window",
+        "icon": "$(empty-window)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "anotherProjectManager.editProjects",
+          "when": "view == anotherProjectManager",
+          "group": "navigation"
+        },
+        {
+          "command": "anotherProjectManager.addCurrentWorkspace",
+          "when": "view == anotherProjectManager",
+          "group": "navigation"
+        },
+        {
+          "command": "anotherProjectManager.createDirectory",
+          "when": "view == anotherProjectManager",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "anotherProjectManager.openNewWindow",
+          "when": "view == anotherProjectManager && viewItem == project",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "title": "Another Project Manager",
+        "properties": {
+          "anotherProjectManager.projects": {
+            "type": "array",
+            "default": "",
+            "description": "Project list"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.9.3",
+    "@types/vscode": "^1.42.0",
+    "glob": "^7.1.6",
+    "mocha": "^7.1.1",
+    "typescript": "^3.9.0-dev.20200323",
+    "tslint": "^6.1.0",
+    "vscode-test": "^1.3.0"
+  }
 }
